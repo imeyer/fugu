@@ -30,7 +30,7 @@ class Fugu
     end.flatten
   end
   
-  def self.shrink(string, delimiter)
+  def self.shrink(string, delimiter=',')
     f = self.new
     f.text = string
     f.delimiter = delimiter
