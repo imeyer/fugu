@@ -1,4 +1,5 @@
 require 'array'
+require 'set'
 
 class Fugu
   attr_accessor :text, :delimiter
@@ -10,14 +11,17 @@ class Fugu
   end
  
   def puff
-    @text.split('|').collect do |range|
-      if range.match(/\{/)
+    discards = Array.new
+    Set.new(@text.split('|').collect do |range|
+      if range =~ /^-/
+        discards << range.match(/^-(.*)/)[1]
+        break
+      elsif range.match(/\{/)
         before, expand_string, after = range.scan(/(.*)\{(.*)\}(.*)/)[0]
         expanded_string = puff_expression(expand_string)
         range = expanded_string.map { |piece| before + piece + after }
       end
-      range
-    end.flatten
+    end.flatten).subtract(Set.new(discards)).to_a.flatten
   end
   
   def puff!
