@@ -12,16 +12,23 @@ class Fugu
  
   def puff
     discards = Array.new
-    Set.new(@text.split('|').collect do |range|
-      if range =~ /^-/
-        discards << range.match(/^-(.*)/)[1]
-        break
-      elsif range.match(/\{/)
+    keepers = Array.new
+    @text.split('|').collect do |range|
+      if range.match(/\{/)
         before, expand_string, after = range.scan(/(.*)\{(.*)\}(.*)/)[0]
-        expanded_string = puff_expression(expand_string)
-        range = expanded_string.map { |piece| before + piece + after }
+        if before =~ /^-/
+          discards << Set.new(puff_expression(expand_string).map { |piece| before.sub('-', '') + piece + after })
+        else
+          keepers << Set.new(puff_expression(expand_string).map { |piece| before + piece + after })
+        end
       end
-    end.flatten).subtract(Set.new(discards)).to_a.flatten
+      if discards.size > 0
+        keepers.subtract(discards).to_a.sort
+      else
+        keepers.to_a.sort
+      end
+      keepers.to_a.sort
+    end.flatten
   end
   
   def puff!
