@@ -64,7 +64,17 @@ Feature: Puffing up
     When I puff it
     Then I should get back "web0009,web0010"
 
-  #Scenario: Removing entry from puffed string
-  #  Given the string "web00{9-11} - web0010" and delimiter ","
-  #  When I puff it
-  #  Then I should get back "web0009,web0011"
+  Scenario: Removing entry from puffed string
+    Given the string "web00{9-11}|-web0010" and delimiter ","
+    When I puff it
+    Then I should get back "web0009,web0011"
+
+	Scenario: Removing a range of entries from puffed string
+    Given the string "web00{9-13}|-web00{10-12}" and delimiter ","
+    When I puff it
+    Then I should get back "web0009,web0013"
+
+	Scenario: Removing a more complex range of entries from puffed string
+    Given the string "web00{9-13}|api0{1-3}|-web00{10-12}|-api02" and delimiter ","
+    When I puff it
+    Then I should get back "web0009,web0013,api01,api03"

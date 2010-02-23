@@ -10,7 +10,7 @@ class Fugu
   end
  
   def puff
-    @text.split('|').collect do |range|
+    hosts = @text.split('|').collect do |range|
       if range.match(/\{/)
         before, expand_string, after = range.scan(/(.*)\{(.*)\}(.*)/)[0]
         expanded_string = puff_expression(expand_string)
@@ -18,6 +18,8 @@ class Fugu
       end
       range
     end.flatten
+    to_remove, all = hosts.partition {|h| h.match(/^-/) }
+    return all-to_remove.map { |h| h[1..-1] }
   end
   
   def puff!
@@ -67,4 +69,3 @@ class Fugu
     "%0#{fat.last.length}d-#{fat.last}" % fat.first.to_i
   end
 end
-
